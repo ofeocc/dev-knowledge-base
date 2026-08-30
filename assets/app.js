@@ -1441,6 +1441,10 @@ window.addEventListener('error', function(e) {
   function renderDetailBody(res) {
     var it = res.item, cat = res.cat;
     if (!it) return '<p class="modal-empty">未找到该条目</p>';
+    // 合并内容覆盖层（KB_CONTENT）：给常用工具补充「是什么/适合谁 + 怎么上手」
+    if (typeof KB_CONTENT !== 'undefined' && KB_CONTENT[it.name]) {
+      it = Object.assign({}, it, KB_CONTENT[it.name]);
+    }
     var rec = getRecommend(it);
     var recCfg = recommendConfig[rec] || recommendConfig.trial;
     var html = '';
@@ -1452,7 +1456,7 @@ window.addEventListener('error', function(e) {
     html += '<span class="tag">' + cfgDisplayName(cat) + '</span>';
     html += '</div></div>';
 
-    html += '<div class="detail-scenarios"><b>适合：</b>' + detailScenario(cat, rec, it) + '</div>';
+    html += '<div class="detail-scenarios"><b>是什么 / 适合：</b>' + (it.scenario || detailScenario(cat, rec, it)) + '</div>';
     html += '<div class="detail-desc">' + (it.desc || it.positioning || '') + '</div>';
 
     if (it.scores) {
