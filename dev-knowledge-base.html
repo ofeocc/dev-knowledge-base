@@ -2393,6 +2393,46 @@ mark.kb-hl {
 @media (hover: none), (pointer: coarse) {
   .card-action { opacity: 1; }
 }
+
+/* ===== 模块精华速览 — 每个模块顶部"值得优先看" ===== */
+.picks-inner {
+  margin: 6px 0 8px;
+  padding: 16px 18px;
+  background: var(--bg2);
+  border: 1px solid var(--accent-soft);
+  border-radius: var(--radius-lg);
+}
+.picks-head {
+  display:flex; align-items:center; gap:8px;
+  font-family:'Outfit',sans-serif; font-weight:700; font-size:14px;
+  color:var(--accent); margin-bottom:12px;
+}
+.picks-head svg { width:16px; height:16px; }
+.picks-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:12px; }
+.pick-card {
+  display:block;
+  padding:14px 16px;
+  background:var(--bg3);
+  border:1px solid var(--rule);
+  border-left:3px solid var(--pick-color, var(--accent));
+  border-radius:var(--radius);
+  text-decoration:none;
+  transition:transform .2s var(--transition), border-color .2s, border-left-color .2s;
+}
+.pick-card:hover { transform:translateY(-2px); border-color:var(--pick-color, var(--accent)); }
+.pick-top { display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:6px; }
+.pick-name { font-family:'Outfit',sans-serif; font-weight:700; font-size:15px; color:var(--ink); }
+.pick-rate { font-size:13px; color:var(--pick-color, var(--accent)); font-weight:700; font-family:'JetBrainsMono',monospace; }
+.pick-tags { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-bottom:6px; }
+.pick-stats { font-size:11px; color:var(--muted2); font-family:'JetBrainsMono',monospace; }
+.pick-desc { font-size:12px; color:var(--muted); line-height:1.5; }
+@media (max-width:768px) { .picks-grid { grid-template-columns:1fr; } }
+
+/* ===== 推荐分级视觉层级 — 让"重点"更突出 ===== */
+.item-card.is-adopt   { border-left:3px solid var(--accent) !important; background:linear-gradient(90deg, var(--accent-soft), var(--bg2) 55%) !important; }
+.item-card.is-trial   { border-left:3px solid var(--accent2) !important; }
+.item-card.is-assess  { border-left:3px solid var(--amber) !important; }
+.item-card.is-caution { border-left:3px solid var(--red) !important; opacity:.92; }
 </style>
 </head>
 <body>
@@ -2609,6 +2649,9 @@ mark.kb-hl {
 </section>
 
 <!-- CONTENT SECTIONS (dynamically rendered) -->
+<!-- 模块精华速览（由 JS 按当前模块填充） -->
+<div class="container" id="module-picks"></div>
+
 <main class="container" id="content-root" role="main" aria-label="知识库内容"></main>
 
 <!-- Toast notifications -->

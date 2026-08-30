@@ -187,7 +187,7 @@ window.addEventListener('error', function(e) {
     var rec = getRecommend(item);
     var recCfg = recommendConfig[rec];
     var actLevel = activityLevel(act.lastPush);
-    var html = '<div class="item-card" style="--card-color:var(--accent)" data-cat="' + catKey + '" data-search="' + (item.name + ' ' + item.desc + ' ' + (item.tags||[]).join(' ') + ' ' + (item.lang||'')).toLowerCase() + '" data-stars="' + (item.stars||0) + '" data-rating="' + (item.rating||0) + '" data-name="' + item.name.toLowerCase() + '" data-id="' + itemId + '" data-lastpush="' + act.lastPush + '" data-contributors="' + act.contributors + '" data-days="' + daysSince(act.lastPush) + '">';
+    var html = '<div class="item-card is-' + rec + '" style="--card-color:var(--accent)" data-cat="' + catKey + '" data-search="' + (item.name + ' ' + item.desc + ' ' + (item.tags||[]).join(' ') + ' ' + (item.lang||'')).toLowerCase() + '" data-stars="' + (item.stars||0) + '" data-rating="' + (item.rating||0) + '" data-name="' + item.name.toLowerCase() + '" data-id="' + itemId + '" data-lastpush="' + act.lastPush + '" data-contributors="' + act.contributors + '" data-days="' + daysSince(act.lastPush) + '">';
 
     // Card actions (fav + compare)
     html += '<div class="card-actions">';
@@ -536,7 +536,8 @@ window.addEventListener('error', function(e) {
   // 渲染分区块标题
   function sectionHeader(title, count, color, iconPath) {
     var html = '<div class="section-title">';
-    html += '<div class="icon" style="background:' + (color || 'var(--accent)') + '20;color:' + (color || 'var(--accent)') + ';">';
+    // 统一使用主题 accent，避免 25 个图标色造成视觉噪点
+    html += '<div class="icon" style="background:var(--accent-soft);color:var(--accent);">';
     html += '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' + (iconPath || '') + '</svg>';
     html += '</div>';
     html += '<h2>' + title + '</h2>';
@@ -742,6 +743,45 @@ window.addEventListener('error', function(e) {
     return 'frontend';
   }
 
+  // —— 模块精华速览：每个模块顶部推荐"值得优先看"的高分项 ——
+  function getModulePicks(mod) {
+    var cfg = moduleConfig[mod];
+    if (!cfg || mod === 'dashboard' || !cfg.filterKeys) return [];
+    var items = [];
+    cfg.filterKeys.forEach(function (k) {
+      (KB_DATA[k] || []).forEach(function (it) { items.push(it); });
+    });
+    function rec(o) { return (o.recommend || '').toLowerCase(); }
+    var picks = items.filter(function (it) {
+      return rec(it) === 'adopt' || (it.rating || 0) >= 8.5;
+    });
+    picks.sort(function (a, b) { return (b.rating || 0) - (a.rating || 0); });
+    return picks.slice(0, 6);
+  }
+
+  function renderModulePicks(mod) {
+    var host = document.getElementById('module-picks');
+    if (!host) return;
+    var picks = getModulePicks(mod);
+    if (!picks.length) { host.innerHTML = ''; host.style.display = 'none'; return; }
+    var html = '<div class="picks-inner">';
+    html += '<div class="picks-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg> 本模块精华 · 值得优先看</div>';
+    html += '<div class="picks-grid">';
+    picks.forEach(function (it) {
+      var rc = recommendConfig[(it.recommend || 'trial')] || recommendConfig.trial;
+      html += '<a class="pick-card" href="' + (it.url || '#') + '" target="_blank" rel="noopener noreferrer" style="--pick-color:' + rc.color + ';">';
+      html += '<div class="pick-top"><span class="pick-name">' + it.name + '</span><span class="pick-rate">★ ' + (it.rating || 0).toFixed(1) + '</span></div>';
+      html += '<div class="pick-tags"><span class="recommend-badge rec-' + (it.recommend || 'trial') + '" style="color:' + rc.color + ';background:' + rc.bg + ';">' + rc.label + '</span>';
+      if (it.stars) html += '<span class="pick-stats">★ ' + fmtStars(it.stars) + '</span>';
+      html += '</div>';
+      html += '<div class="pick-desc">' + (it.desc || '').slice(0, 78) + '…</div>';
+      html += '</a>';
+    });
+    html += '</div></div>';
+    host.innerHTML = html;
+    host.style.display = '';
+  }
+
   // 切换模块
   function switchModule(mod) {
     if (!moduleConfig[mod]) return;
@@ -766,6 +806,7 @@ window.addEventListener('error', function(e) {
       if (rc) rc.textContent = '';
       // 隐藏快捷导航
       if (quickNav) quickNav.style.display = 'none';
+      renderModulePicks('dashboard');
       // 滚到顶部
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
@@ -837,6 +878,7 @@ window.addEventListener('error', function(e) {
       window.scrollTo({ top: contentTop, behavior: 'smooth' });
     }
 
+    renderModulePicks(mod);
     syncURL();
   }
 
