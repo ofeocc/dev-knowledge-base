@@ -2433,6 +2433,74 @@ mark.kb-hl {
 .item-card.is-trial   { border-left:3px solid var(--accent2) !important; }
 .item-card.is-assess  { border-left:3px solid var(--amber) !important; }
 .item-card.is-caution { border-left:3px solid var(--red) !important; opacity:.92; }
+
+/* ===== 详情弹窗（A）+ 快速上手（C）===== */
+.detail-head { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-bottom:10px; }
+.detail-name { font-family:'Outfit',sans-serif; font-size:24px; font-weight:800; letter-spacing:-.02em; }
+.detail-name a { color:var(--ink); }
+.detail-name a:hover { color:var(--accent); }
+.detail-meta { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.detail-star, .detail-rate { font-size:13px; color:var(--amber); font-family:'JetBrainsMono',monospace; font-weight:700; }
+.detail-rate { color:var(--accent2); }
+.detail-scenarios { font-size:14px; color:var(--muted); padding:10px 14px; background:var(--accent-soft); border-radius:8px; margin-bottom:12px; }
+.detail-scenarios b { color:var(--accent); }
+.detail-desc { font-size:14px; color:var(--ink); line-height:1.7; margin-bottom:16px; }
+.detail-scores { margin-bottom:8px; }
+.detail-ai { margin-bottom:14px; }
+.dai-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; margin-bottom:10px; }
+.dai-grid div { background:var(--bg3); border:1px solid var(--rule); border-radius:8px; padding:8px 10px; font-size:12px; color:var(--muted); }
+.dai-grid b { display:block; color:var(--ink); font-size:11px; margin-bottom:2px; }
+.dai-cons { font-size:13px; margin-bottom:8px; }
+.dai-cons b { font-size:12px; }
+.dai-cons b.ok { color:var(--green); }
+.dai-cons b.no { color:var(--red); }
+.dai-cons ul { margin:4px 0 0 18px; color:var(--muted); }
+.detail-tags { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+.detail-quickstart { margin-bottom:14px; }
+.qk-title { font-size:13px; font-weight:700; color:var(--accent2); margin-bottom:8px; }
+.detail-tut { font-size:13px; color:var(--muted); padding:10px 14px; background:var(--bg2); border:1px solid var(--rule); border-radius:8px; margin-bottom:12px; display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.dt-tags { color:var(--accent); font-weight:600; }
+.detail-example { font-size:13px; color:var(--muted); margin-bottom:12px; }
+.detail-example b { margin-right:6px; color:var(--ink); }
+.detail-activity { font-size:12px; color:var(--muted); font-family:'JetBrainsMono',monospace; margin-bottom:14px; }
+.detail-src { display:flex; gap:10px; flex-wrap:wrap; }
+.btn-primary, .btn-ghost {
+  padding:8px 16px; border-radius:var(--radius-full); font-size:13px; font-weight:600; cursor:pointer;
+  font-family:'Outfit',sans-serif; text-decoration:none; transition:all var(--transition); display:inline-flex; align-items:center; gap:6px;
+}
+.btn-primary { background:var(--accent); color:#fff; border:none; box-shadow:0 2px 12px -4px var(--accent-glow); }
+.btn-primary:hover { background:var(--accent); transform:translateY(-1px); filter:brightness(1.08); }
+.btn-ghost { background:var(--bg2); color:var(--ink); border:1px solid var(--rule2); }
+.btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
+
+/* ===== 选型向导（B）===== */
+.guide-intro { font-size:13px; color:var(--muted); margin-bottom:14px; }
+.guide-scenarios { display:flex; flex-direction:column; gap:12px; }
+.guide-scenario { border:1px solid var(--rule); border-radius:var(--radius-lg); padding:16px; background:var(--bg2); }
+.gs-head { display:flex; align-items:baseline; gap:10px; margin-bottom:8px; flex-wrap:wrap; }
+.gs-label { font-family:'Outfit',sans-serif; font-size:17px; font-weight:800; color:var(--ink); }
+.gs-desc { font-size:12px; color:var(--muted); }
+.gs-combo { font-size:13px; color:var(--accent2); padding:8px 12px; background:var(--accent2-soft); border-radius:8px; margin-bottom:10px; }
+.gs-combo b { margin-right:6px; }
+.gs-picks { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
+.gs-pick {
+  padding:6px 12px; border-radius:var(--radius-full); background:var(--bg3); border:1px solid var(--rule2);
+  font-size:13px; font-weight:500; cursor:pointer; color:var(--ink); transition:all var(--transition);
+}
+.gs-pick:hover { border-color:var(--accent); color:var(--accent); transform:translateY(-1px); }
+.gs-r { font-size:11px; color:var(--muted2); margin-left:6px; font-family:'JetBrainsMono',monospace; }
+.gs-actions { display:flex; gap:10px; }
+
+/* 指南里的“帮你选”Cta */
+.ug-item-cta { width:100%; }
+.ug-cta-btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 16px; border-radius:var(--radius-full); border:none; cursor:pointer;
+  background:linear-gradient(90deg, var(--accent), var(--accent2)); color:#fff;
+  font-size:13px; font-weight:700; font-family:'Outfit',sans-serif;
+  box-shadow:0 2px 16px -4px var(--accent-glow); transition:transform .2s var(--transition), filter .2s;
+}
+.ug-cta-btn:hover { transform:translateY(-1px); filter:brightness(1.06); }
 </style>
 </head>
 <body>
@@ -2543,6 +2611,8 @@ mark.kb-hl {
       如何使用这个知识库
     </div>
     <div class="us-guide-items">
+      <span class="ug-item ug-item-cta"><button class="ug-cta-btn" id="guide-open">💡 不知道选哪个？用「帮你选」</button></span>
+      <span class="ug-item"><b>深入了解</b> 点击任意卡片查看完整详情 + 上手教程</span>
       <span class="ug-item"><b>搜索</b> 顶部搜索框 · 按 <kbd>/</kbd> 快速聚焦</span>
       <span class="ug-item"><b>切换分类</b> 顶部标签：前端 / 后端 / AI 工程 / 教程 / 可视化</span>
       <span class="ug-item"><b>收藏</b> 卡片右上角 <b class="ug-hl">♥</b></span>
@@ -2738,6 +2808,28 @@ mark.kb-hl {
     <div class="modal-body" id="fav-body">
       <p class="modal-empty">点击卡片上的心形按钮收藏工具</p>
     </div>
+  </div>
+</div>
+
+<!-- 详情弹窗（A：点击卡片展示完整信息 + 快速上手） -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal-content" style="max-width:860px;">
+    <div class="modal-header">
+      <h2 id="detail-title">详情</h2>
+      <button class="modal-close" id="detail-close">&times;</button>
+    </div>
+    <div class="modal-body" id="detail-body"></div>
+  </div>
+</div>
+
+<!-- 选型向导（B：按场景帮我选） -->
+<div class="modal-overlay" id="guide-modal">
+  <div class="modal-content" style="max-width:760px;">
+    <div class="modal-header">
+      <h2>帮你选 · 按场景推荐</h2>
+      <button class="modal-close" id="guide-close">&times;</button>
+    </div>
+    <div class="modal-body" id="guide-body"></div>
   </div>
 </div>
 
