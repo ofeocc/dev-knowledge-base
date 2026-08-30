@@ -1399,6 +1399,186 @@ window.addEventListener('error', function(e) {
     return (KB_DATA[catKey] || []).find(function(m) { return m.name === name; });
   }
 
+  // ===== 通用弹窗开关 =====
+  function modalOpen(el) { if (el) { el.classList.add('open'); document.body.style.overflow = 'hidden'; } }
+  function modalClose(el) { if (el) { el.classList.remove('open'); document.body.style.overflow = ''; } }
+
+  // ===== A/B/C：详情弹窗 + 选型向导 + 快速上手 =====
+  function getItemById(id) {
+    var parts = id.split('::');
+    var catKey = parts[0];
+    var name = parts.slice(1).join('::');
+    if (catKey === 'ai-models') return { cat: 'ai-models', item: (KB_DATA.aiModels || []).find(function(m){return m.name===name;}) };
+    return { cat: catKey, item: (KB_DATA[catKey] || []).find(function(m){return m.name===name;}) };
+  }
+  function cfgDisplayName(cat) {
+    return (catConfig[cat] && catConfig[cat].name) || cat;
+  }
+  function ratingBarDetail(label, val, max) {
+    max = max || 10;
+    var pct = Math.max(2, Math.round((val / max) * 100));
+    return '<div class="rating-bar"><span class="label">' + label + '</span><div class="track"><div class="fill" style="width:' + pct + '%"></div></div><span class="val">' + val + '</span></div>';
+  }
+  function detailScenario(cat, rec, it) {
+    var r = { adopt:'强烈推荐', trial:'值得尝试', assess:'可探索', caution:'谨慎使用' };
+    var s = it.scores || {};
+    var parts = [];
+    if (s.eco) parts.push('生态 ' + s.eco + '/10');
+    if (s.perf) parts.push('性能 ' + s.perf + '/10');
+    if (s.main) parts.push('维护 ' + s.main + '/10');
+    return cfgDisplayName(cat) + ' 方向 · ' + (r[rec] || '可用') + (parts.length ? (' · ' + parts.join(' · ')) : '');
+  }
+  function relatedTutorial(cat, it) {
+    var tuts = KB_DATA.devopsTutorials || [];
+    var c = (cat || '').toLowerCase();
+    var match = null;
+    if (c.indexOf('deploy') !== -1) match = tuts.find(function(t){ return t.cat === '持续集成/部署'; });
+    else if (c.indexOf('backend') !== -1) match = tuts.find(function(t){ return t.name === 'Docker'; });
+    else if (c.indexOf('vector') !== -1) match = tuts.find(function(t){ return t.name === 'Docker'; });
+    return match || null;
+  }
+
+  function renderDetailBody(res) {
+    var it = res.item, cat = res.cat;
+    if (!it) return '<p class="modal-empty">未找到该条目</p>';
+    var rec = getRecommend(it);
+    var recCfg = recommendConfig[rec] || recommendConfig.trial;
+    var html = '';
+
+    html += '<div class="detail-head"><div class="detail-name">' + (it.url ? '<a href="' + it.url + '" target="_blank" rel="noopener noreferrer">' + it.name + '</a>' : it.name) + '</div>';
+    html += '<div class="detail-meta"><span class="recommend-badge rec-' + rec + '" style="color:' + recCfg.color + ';background:' + recCfg.bg + ';">' + recCfg.label + ' · ' + recCfg.desc + '</span>';
+    if (it.stars) html += '<span class="detail-star">★ ' + fmtStars(it.stars) + '</span>';
+    if (it.rating) html += '<span class="detail-rate">综合 ' + it.rating.toFixed(1) + '</span>';
+    html += '<span class="tag">' + cfgDisplayName(cat) + '</span>';
+    html += '</div></div>';
+
+    html += '<div class="detail-scenarios"><b>适合：</b>' + detailScenario(cat, rec, it) + '</div>';
+    html += '<div class="detail-desc">' + (it.desc || it.positioning || '') + '</div>';
+
+    if (it.scores) {
+      var s = it.scores;
+      html += '<div class="detail-scores">';
+      if (cat === 'ai-models') {
+        html += ratingBarDetail('推理', s.reasoning) + ratingBarDetail('编码', s.coding) + ratingBarDetail('Agent', s.agent) + ratingBarDetail('多模态', s.multimodal) + ratingBarDetail('性价比', s.cost) + ratingBarDetail('速度', s.speed) + ratingBarDetail('开源', s.open);
+      } else {
+        html += ratingBarDetail('生态', s.eco) + ratingBarDetail('性能', s.perf) + ratingBarDetail('学习', s.learn) + ratingBarDetail('类型', s.type) + ratingBarDetail('维护', s.main);
+      }
+      html += '</div>';
+    }
+
+    if (cat === 'ai-models') {
+      html += '<div class="detail-ai">';
+      html += '<div class="dai-grid"><div><b>厂商</b> ' + (it.vendor || '—') + '</div><div><b>梯队</b> ' + (it.tier || '—') + '</div><div><b>上下文</b> ' + (it.context || '—') + '</div><div><b>价格</b> ' + (it.price ? (it.price.input + ' 入 / ' + it.price.output + ' 出') : '—') + '</div></div>';
+      if (it.pros && it.pros.length) html += '<div class="dai-cons"><b class="ok">优点</b><ul>' + it.pros.map(function(p){return '<li>'+p+'</li>';}).join('') + '</ul></div>';
+      if (it.cons && it.cons.length) html += '<div class="dai-cons"><b class="no">缺点</b><ul>' + it.cons.map(function(p){return '<li>'+p+'</li>';}).join('') + '</ul></div>';
+      html += '</div>';
+    }
+
+    if (it.tags && it.tags.length) {
+      html += '<div class="detail-tags">' + it.tags.map(function(t){return '<span class="tag">'+t+'</span>';}).join('') + (it.lang ? '<span class="tag lang">'+it.lang+'</span>' : '') + '</div>';
+    }
+
+    // C：嵌入教程（快速上手代码 + 相关教程）
+    if (it.snippet) {
+      html += '<div class="detail-quickstart"><div class="qk-title">🚀 快速上手</div><div class="code-block"><button class="copy-btn">复制</button><code>' + it.snippet + '</code></div></div>';
+    }
+    var rel = relatedTutorial(cat, it);
+    if (rel) {
+      html += '<div class="detail-tut"><b>相关上手教程</b><span class="dt-tags">' + rel.name + '</span> — <a href="' + rel.source + '" target="_blank" rel="noopener noreferrer">打开教程 ↗</a></div>';
+    }
+
+    if (it.example) html += '<div class="detail-example"><b>知名案例</b><a href="' + it.example.url + '" target="_blank" rel="noopener noreferrer">' + it.example.name + ' ↗</a></div>';
+
+    var act = getActivity(it);
+    var actLvl = activityLevel(act.lastPush) || { cls: 'stable' };
+    html += '<div class="detail-activity"><span class="activity-indicator act-' + actLvl.cls + '">最近提交 ' + act.lastPush + '</span> · 👥 ' + act.contributors + ' 贡献者</div>';
+
+    var src = it.url || it.source;
+    if (src) html += '<div class="detail-src"><a class="btn-primary" href="' + src + '" target="_blank" rel="noopener noreferrer">查看源码 / 官网 ↗</a><button class="btn-ghost" data-add-compare="' + cat + '::' + it.name + '">加入对比</button></div>';
+
+    return html;
+  }
+
+  function openDetail(id) {
+    var res = getItemById(id);
+    var body = document.getElementById('detail-body');
+    var title = document.getElementById('detail-title');
+    if (title) title.textContent = (res && res.item) ? res.item.name : '详情';
+    body.innerHTML = renderDetailBody(res);
+    modalOpen(document.getElementById('detail-modal'));
+  }
+
+  // ===== B：选型向导 =====
+  var guideScenarios = [
+    { label:'做 Web 前端', desc:'界面、组件、样式、状态、构建', module:'frontend', cats:['frontend','meta','ui','css','build','state'], combo:'React + Vite + TailwindCSS + Zustand（生态最大）' },
+    { label:'做后端 / API', desc:'服务端、接口、数据模型、鉴权', module:'backend', cats:['backend','api','orm','auth'], combo:'FastAPI 或 NestJS + PostgreSQL + Prisma' },
+    { label:'做 AI 应用', desc:'大模型、向量库、Agent、工具调用', module:'ai', cats:['ai-models','vector','agent','mcp','tool'], combo:'DeepSeek/Claude + Milvus/Qdrant + LangGraph' },
+    { label:'做数据可视化', desc:'图表、看板、交互可视化', module:'frontend', cats:['dataviz','anim','three'], combo:'ECharts + D3 + React' },
+    { label:'做移动 / 跨平台', desc:'iOS/Android/桌面 多端一套代码', module:'frontend', cats:['mobile'], combo:'React Native 或 Flutter' },
+    { label:'团队协作 / 部署', desc:'版本控制、容器化、CI/CD', module:'tutorial', cats:['deploy'], combo:'Git + Docker + GitHub Actions' }
+  ];
+
+  function getCatPicks(cats) {
+    var items = [];
+    cats.forEach(function(c) {
+      (KB_DATA[c] || []).forEach(function(it) {
+        var r = (it.recommend || '').toLowerCase();
+        items.push({ item: it, cat: c, score: (it.rating || 0), adopt: r === 'adopt' });
+      });
+    });
+    items = items.filter(function(o) { return o.adopt || o.score >= 8.5; });
+    items.sort(function(a, b) { return b.score - a.score; });
+    return items.slice(0, 5);
+  }
+
+  function openGuide() {
+    var body = document.getElementById('guide-body');
+    var html = '<div class="guide-intro">按你想做的事情，这里直接给推荐 + 一套组合方案。点推荐项看详情，点「进入该模块」切换分类。</div>';
+    html += '<div class="guide-scenarios">';
+    guideScenarios.forEach(function(sc) {
+      html += '<div class="guide-scenario">';
+      html += '<div class="gs-head"><span class="gs-label">' + sc.label + '</span><span class="gs-desc">' + sc.desc + '</span></div>';
+      html += '<div class="gs-combo"><b>推荐组合</b> ' + sc.combo + '</div>';
+      html += '<div class="gs-picks">';
+      getCatPicks(sc.cats).forEach(function(o) {
+        html += '<button class="gs-pick" data-id="' + o.cat + '::' + o.item.name + '">' + o.item.name + '<span class="gs-r">★ ' + (o.item.rating || 0).toFixed(1) + '</span></button>';
+      });
+      html += '</div>';
+      html += '<div class="gs-actions"><button class="btn-ghost" data-go-module="' + sc.module + '">进入「' + sc.label + '」模块</button></div>';
+      html += '</div>';
+    });
+    html += '</div>';
+    body.innerHTML = html;
+    modalOpen(document.getElementById('guide-modal'));
+  }
+
+  // 卡片点击 -> 详情；wizard 交互
+  function initDetailOpen() {
+    document.addEventListener('click', function(e) {
+      var card = e.target.closest('.item-card[data-id], .ai-model-card[data-id]');
+      if (card) {
+        if (e.target.closest('a, button, .card-action, .tag, .recommend-badge, .card-name')) return;
+        var id = card.getAttribute('data-id');
+        if (id) { e.preventDefault(); openDetail(id); return; }
+      }
+      var gs = e.target.closest('.gs-pick');
+      if (gs && gs.getAttribute('data-id')) { openDetail(gs.getAttribute('data-id')); return; }
+      var gsGo = e.target.closest('[data-go-module]');
+      if (gsGo) { switchModule(gsGo.getAttribute('data-go-module')); modalClose(document.getElementById('guide-modal')); return; }
+      var addCmp = e.target.closest('[data-add-compare]');
+      if (addCmp) { toggleCompare(addCmp.getAttribute('data-add-compare')); return; }
+    });
+    var gOpen = document.getElementById('guide-open');
+    if (gOpen) gOpen.addEventListener('click', function() { openGuide(); });
+    var dClose = document.getElementById('detail-close');
+    if (dClose) dClose.addEventListener('click', function() { modalClose(document.getElementById('detail-modal')); });
+    var gClose = document.getElementById('guide-close');
+    if (gClose) gClose.addEventListener('click', function() { modalClose(document.getElementById('guide-modal')); });
+    [document.getElementById('detail-modal'), document.getElementById('guide-modal')].forEach(function(m) {
+      if (m) m.addEventListener('click', function(e) { if (e.target === m) modalClose(m); });
+    });
+  }
+
   function renderCompareModal() {
     var body = document.getElementById('compare-body');
     var ids = Object.keys(compareSet);
@@ -2393,6 +2573,7 @@ window.addEventListener('error', function(e) {
     try { initRippleEffect(); } catch(e) { console.warn('[init] ripple:', e); }
     try { initCopyButtons(); } catch(e) { console.warn('[init] copy:', e); }
     try { initCardActions(); } catch(e) { console.warn('[init] cardActions:', e); }
+    try { initDetailOpen(); } catch(e) { console.warn('[init] detailOpen:', e); }
     try { initModals(); } catch(e) { console.warn('[init] modals:', e); }
     try { applySyntaxHighlighting(); } catch(e) { console.warn('[init] syntax:', e); }
     try { restoreCardStates(); } catch(e) { console.warn('[init] cardStates:', e); }
@@ -2461,24 +2642,24 @@ window.addEventListener('error', function(e) {
     // 异步加载真实 GitHub 数据（不阻塞首屏，加载完成后自动更新卡片）
     loadGithubData();
 
-    // 初始化模块系统 — 按 URL 决定初始模块（支持 #m= / #cat= / #section）
-    setTimeout(function() {
+    // 初始化模块系统 — 按 URL 决定初始模块（支持 #m= / #cat= / #section）。
+    // 同步执行（不再 setTimeout）：避免刚渲染出全部卡片、200ms 后才收起造成
+    // 的"全量闪现"，也避免测试/用户在第一时刻看到错误的全量内容。
+    try {
+      switchModule(resolveInitialModule());
+      // 应用 URL 中的搜索词（switchModule 会清空搜索，需重新应用）
       try {
-        switchModule(resolveInitialModule());
-        // 应用 URL 中的搜索词（switchModule 会清空搜索，需重新应用）
-        try {
-          var params = new URLSearchParams(location.hash.replace(/^#/, ''));
-          var q = params.get('q');
-          if (q) {
-            searchInput.value = q;
-            currentSearch = q.toLowerCase().trim();
-            applyFilter();
-          }
-        } catch (e2) {}
-      } catch(e) {
-        console.error('[switchModule init]', e);
-      }
-    }, 200);
+        var params = new URLSearchParams(location.hash.replace(/^#/, ''));
+        var q = params.get('q');
+        if (q) {
+          searchInput.value = q;
+          currentSearch = q.toLowerCase().trim();
+          applyFilter();
+        }
+      } catch (e2) {}
+    } catch(e) {
+      console.error('[switchModule init]', e);
+    }
   } catch(err) {
     console.error('[KB Init Error]', err);
     if (root) {
