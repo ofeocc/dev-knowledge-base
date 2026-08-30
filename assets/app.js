@@ -832,28 +832,17 @@ window.addEventListener('error', function(e) {
     var clearBtn = document.getElementById('search-clear');
     if (clearBtn) clearBtn.style.display = 'none';
 
-    // 只显示属于当前模块的卡片
-    for (var i = 0; i < _cachedCards.length; i++) {
-      var c = _cachedCards[i];
-      var cat = c.getAttribute('data-cat');
-      c.style.display = cfg.filterKeys.indexOf(cat) !== -1 ? '' : 'none';
+    // 卡片显隐跟随其所属 section（同步设置 inline display，保持与 applyFilter 一致），
+    // 不再按 data-cat 过滤——否则 glossary/tech/learning 等卡片会被误隐藏。
+    _visibleCardCount = 0;
+    _cachedCards.forEach(function(c) {
+      var sec = c.closest('.content-section');
+      var show = !!(sec && sec.style.display !== 'none');
+      c.style.display = show ? '' : 'none';
       c.style.opacity = '1';
       c.style.transform = 'translateY(0)';
-    }
-
-    _visibleCardCount = cfg.filterKeys.reduce(function(sum, key) {
-      var items = KB_DATA[key] || [];
-      return sum + (Array.isArray(items) ? items.length : 0);
-    }, 0);
-
-    // 特殊处理：tech 模块包含技巧库
-    if (mod === 'tutorial') {
-      _visibleCardCount += (KB_DATA.techniques || []).length + (KB_DATA.learningPaths || []).length + (KB_DATA.devopsTutorials || []).length + (KB_DATA.showcases || []).length;
-    }
-    // AI 模块包含大模型
-    if (mod === 'ai') {
-      _visibleCardCount += (KB_DATA.aiModels || []).length + (KB_DATA.aiSolutions || []).length;
-    }
+      if (show) _visibleCardCount++;
+    });
 
     updateResultCount();
 
@@ -1097,9 +1086,11 @@ window.addEventListener('error', function(e) {
       var cat = c.getAttribute('data-cat');
       var shouldShow = false;
 
-      // 分类筛选 + 模块约束
+      // 分类筛选 + 模块约束：按所属 section 判断（不再用 data-cat，
+      // 否则 glossary/tech/learning 卡片哪怕 section 显示也会被误隐藏）
       var modCfg = moduleConfig[currentModule];
-      var inModule = modCfg && modCfg.filterKeys.indexOf(cat) !== -1;
+      var sec = c.closest('.content-section');
+      var inModule = !!(modCfg && sec && modCfg.sections.indexOf(sec.id) !== -1);
       if (!inModule) {
         shouldShow = false;
       } else if (currentFilter === 'all') {
