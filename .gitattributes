@@ -1,0 +1,18 @@
+# Normalize line endings: store LF in the repo, let git handle checkouts.
+* text=auto
+*.html text eol=lf
+*.js   text eol=lf
+*.cjs  text eol=lf
+*.mjs  text eol=lf
+*.json text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.css  text eol=lf
+*.md   text eol=lf
+
+# Binary assets must never be re-encoded.
+*.ttf  binary
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
