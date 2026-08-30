@@ -2355,6 +2355,44 @@ mark.kb-hl {
 .showcase-card:hover .sc-name, .solution-card:hover .sol-name {
   color: var(--accent) !important;
 }
+
+/* ===== 使用指南 — 让用户一进来就知道怎么用 ===== */
+.us-guide-inner {
+  margin: 6px 0 6px;
+  padding: 14px 18px;
+  background: var(--bg2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+.us-guide-title {
+  display:flex; align-items:center; gap:8px;
+  font-family:'Outfit',sans-serif; font-weight:700; font-size:14px;
+  color:var(--ink); margin-bottom:10px;
+}
+.us-guide-title svg { width:16px; height:16px; color:var(--accent); flex-shrink:0; }
+.us-guide-items {
+  display:flex; flex-wrap:wrap; gap:8px 20px;
+  font-size:12px; color:var(--muted); line-height:1.6;
+}
+.ug-item { display:inline-flex; align-items:center; gap:5px; white-space:nowrap; }
+.ug-item b { color: var(--ink); font-weight:600; }
+.ug-hl { color: var(--accent); }
+.ug-item kbd { padding:1px 6px; border-radius:4px; background:var(--bg3); border:1px solid var(--rule2); font-size:10px; color:var(--muted2); }
+.ug-badge {
+  display:inline-flex; align-items:center; gap:3px;
+  padding:1px 7px; border-radius:var(--radius-full);
+  font-size:10px; font-weight:700; letter-spacing:.03em;
+  border:1px solid currentColor; margin:0 2px;
+}
+@media (max-width:768px) {
+  .us-guide-items { gap:6px 12px; }
+  .ug-item { white-space:normal; }
+}
+
+/* ===== 触屏也能收藏/对比：移动端恒显卡片操作按钮（不再依赖 hover） ===== */
+@media (hover: none), (pointer: coarse) {
+  .card-action { opacity: 1; }
+}
 </style>
 </head>
 <body>
@@ -2454,6 +2492,30 @@ mark.kb-hl {
       <option value="recent">最近更新</option>
       <option value="contributors">贡献者</option>
     </select>
+  </div>
+</div>
+
+<!-- 使用指南 — 让用户一进来就知道怎么用 -->
+<div class="us-guide container" id="us-guide">
+  <div class="us-guide-inner">
+    <div class="us-guide-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      如何使用这个知识库
+    </div>
+    <div class="us-guide-items">
+      <span class="ug-item"><b>搜索</b> 顶部搜索框 · 按 <kbd>/</kbd> 快速聚焦</span>
+      <span class="ug-item"><b>切换分类</b> 顶部标签：前端 / 后端 / AI 工程 / 教程 / 可视化</span>
+      <span class="ug-item"><b>收藏</b> 卡片右上角 <b class="ug-hl">♥</b></span>
+      <span class="ug-item"><b>对比</b> 卡片右上角 <b class="ug-hl">≡</b>，最多 4 个工具横向对比</span>
+      <span class="ug-item"><b>评级</b> 按 生态 / 性能 / 学习 / 类型安全 / 维护 五维打分</span>
+      <span class="ug-item"><b>推荐</b>
+        <span class="ug-badge rec-adopt">ADOPT 强烈推荐</span>
+        <span class="ug-badge rec-trial">TRIAL 值得试用</span>
+        <span class="ug-badge rec-assess">ASSESS 评估</span>
+        <span class="ug-badge rec-caution">CAUTION 谨慎</span>
+      </span>
+      <span class="ug-item"><b>快捷键</b> <kbd>Ctrl</kbd>+<kbd>K</kbd> 命令面板 · <kbd>Esc</kbd> 清除搜索</span>
+    </div>
   </div>
 </div>
 

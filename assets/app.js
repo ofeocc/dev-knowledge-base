@@ -711,6 +711,37 @@ window.addEventListener('error', function(e) {
 
   var currentModule = 'frontend';
 
+  // —— URL 模块解析：让 #m= / #cat= / #section 都能正确落在对应模块 ——
+  function moduleOfSection(secId) {
+    for (var k in moduleConfig) {
+      if (moduleConfig[k].sections && moduleConfig[k].sections.indexOf(secId) !== -1) return k;
+    }
+    return null;
+  }
+  function moduleOfCat(cat) {
+    for (var k in moduleConfig) {
+      if (moduleConfig[k].filterKeys && moduleConfig[k].filterKeys.indexOf(cat) !== -1) return k;
+    }
+    return null;
+  }
+  function resolveInitialModule() {
+    var hash = location.hash.replace(/^#/, '');
+    if (!hash) return 'frontend';
+    // 纯 section 锚点，如 #sec-ai-models
+    if (hash.indexOf('=') === -1) {
+      var m = moduleOfSection(hash);
+      if (m) return m;
+    }
+    try {
+      var params = new URLSearchParams(hash);
+      var pm = params.get('m');
+      if (pm && moduleConfig[pm]) return pm;
+      var cat = params.get('cat');
+      if (cat) { var m2 = moduleOfCat(cat); if (m2) return m2; }
+    } catch (e) {}
+    return 'frontend';
+  }
+
   // 切换模块
   function switchModule(mod) {
     if (!moduleConfig[mod]) return;
@@ -1108,7 +1139,7 @@ window.addEventListener('error', function(e) {
     clearTimeout(urlTimer);
     urlTimer = setTimeout(function() {
       var params = new URLSearchParams();
-      if (currentFilter && currentFilter !== 'all') params.set('cat', currentFilter);
+      if (currentModule && currentModule !== 'frontend') params.set('m', currentModule);
       if (currentSearch) params.set('q', currentSearch);
       if (currentSort && currentSort !== 'default') params.set('sort', currentSort);
       var hash = params.toString();
@@ -1123,17 +1154,7 @@ window.addEventListener('error', function(e) {
     var params = new URLSearchParams(hash);
     var changed = false;
 
-    var cat = params.get('cat');
-    if (cat) {
-      var chip = document.querySelector('.chip[data-filter="' + cat + '"]');
-      if (chip) {
-        chips.forEach(function(c) { c.classList.remove('active'); });
-        chip.classList.add('active');
-        currentFilter = cat;
-        changed = true;
-      }
-    }
-
+    // 分类已改由模块导航承载，此处不再读 .chip（已被移除）
     var q = params.get('q');
     if (q) {
       searchInput.value = q;
@@ -2407,10 +2428,20 @@ window.addEventListener('error', function(e) {
     // 异步加载真实 GitHub 数据（不阻塞首屏，加载完成后自动更新卡片）
     loadGithubData();
 
-    // 初始化模块系统 — 默认显示前端模块
+    // 初始化模块系统 — 按 URL 决定初始模块（支持 #m= / #cat= / #section）
     setTimeout(function() {
       try {
-        switchModule('frontend');
+        switchModule(resolveInitialModule());
+        // 应用 URL 中的搜索词（switchModule 会清空搜索，需重新应用）
+        try {
+          var params = new URLSearchParams(location.hash.replace(/^#/, ''));
+          var q = params.get('q');
+          if (q) {
+            searchInput.value = q;
+            currentSearch = q.toLowerCase().trim();
+            applyFilter();
+          }
+        } catch (e2) {}
       } catch(e) {
         console.error('[switchModule init]', e);
       }
