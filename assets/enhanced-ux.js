@@ -615,72 +615,20 @@
    * 10. 导航栏行为 + 滚动进度 + 返回顶部
    * ============================================================ */
   function initNavbarBehavior() {
+    // 导航栏 + 模块导航一直保持粘性，不做任何"下滑隐藏/收起"。
+    // 之前 navbar 用 quickTo 上移、module-nav 用 .collapsed 收起，二者阈值不同步，
+    // 导致"顶部消失、中部残留"的错乱与卡顿感。
     if (reduceMotion) return;
-
-    var navbar = document.querySelector('.navbar');
-    var moduleNav = document.querySelector('.module-nav');
-    var lastY = 0;
     var progress = document.querySelector('.scroll-progress');
-    var navbarY = navbar ? gsap.quickTo(navbar, 'y', { duration: 0.4, ease: 'power3.out' }) : null;
-    var navbarHidden = false;
-    var moduleCollapsed = false;
-
-    if (lenis) {
-      lenis.on('scroll', function (e) {
-        var y = e.scroll || window.scrollY;
-        var max = document.documentElement.scrollHeight - window.innerHeight;
-        var pct = max > 0 ? (y / max) * 100 : 0;
-
-        if (progress) progress.style.width = pct + '%';
-
-        // navbar: 向下滚动隐藏，向上显示
-        if (navbarY) {
-          var shouldHide = y > 100 && y > lastY;
-          if (shouldHide !== navbarHidden) {
-            navbarHidden = shouldHide;
-            navbarY(shouldHide ? -80 : 0);
-          }
-        }
-
-        // module-nav: 滚动超过 120px 收起，回到顶部附近恢复
-        if (moduleNav) {
-          var shouldCollapse = y > 120 && y > lastY;
-          if (shouldCollapse !== moduleCollapsed) {
-            moduleCollapsed = shouldCollapse;
-            if (shouldCollapse) {
-              moduleNav.classList.add('collapsed');
-            } else {
-              moduleNav.classList.remove('collapsed');
-            }
-          }
-        }
-
-        lastY = y;
-      });
-    } else {
-      window.addEventListener('scroll', function() {
-        var y = window.scrollY;
-        var max = document.documentElement.scrollHeight - window.innerHeight;
-        var pct = max > 0 ? (y / max) * 100 : 0;
-        if (progress) progress.style.width = pct + '%';
-        if (navbarY) {
-          var shouldHide = y > 100 && y > lastY;
-          if (shouldHide !== navbarHidden) {
-            navbarHidden = shouldHide;
-            navbarY(shouldHide ? -80 : 0);
-          }
-        }
-        if (moduleNav) {
-          var shouldCollapse = y > 120 && y > lastY;
-          if (shouldCollapse !== moduleCollapsed) {
-            moduleCollapsed = shouldCollapse;
-            if (shouldCollapse) moduleNav.classList.add('collapsed');
-            else moduleNav.classList.remove('collapsed');
-          }
-        }
-        lastY = y;
-      }, { passive: true });
+    function update() {
+      var y = window.scrollY;
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      var pct = max > 0 ? (y / max) * 100 : 0;
+      if (progress) progress.style.width = pct + '%';
     }
+    if (lenis) lenis.on('scroll', update);
+    else window.addEventListener('scroll', update, { passive: true });
+    update();
   }
 
   function initScrollProgress() {

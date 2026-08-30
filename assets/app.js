@@ -187,7 +187,7 @@ window.addEventListener('error', function(e) {
     var rec = getRecommend(item);
     var recCfg = recommendConfig[rec];
     var actLevel = activityLevel(act.lastPush);
-    var html = '<div class="item-card" style="--card-color:' + cfg.color + '" data-cat="' + catKey + '" data-search="' + (item.name + ' ' + item.desc + ' ' + (item.tags||[]).join(' ') + ' ' + (item.lang||'')).toLowerCase() + '" data-stars="' + (item.stars||0) + '" data-rating="' + (item.rating||0) + '" data-name="' + item.name.toLowerCase() + '" data-id="' + itemId + '" data-lastpush="' + act.lastPush + '" data-contributors="' + act.contributors + '" data-days="' + daysSince(act.lastPush) + '">';
+    var html = '<div class="item-card" style="--card-color:var(--accent)" data-cat="' + catKey + '" data-search="' + (item.name + ' ' + item.desc + ' ' + (item.tags||[]).join(' ') + ' ' + (item.lang||'')).toLowerCase() + '" data-stars="' + (item.stars||0) + '" data-rating="' + (item.rating||0) + '" data-name="' + item.name.toLowerCase() + '" data-id="' + itemId + '" data-lastpush="' + act.lastPush + '" data-contributors="' + act.contributors + '" data-days="' + daysSince(act.lastPush) + '">';
 
     // Card actions (fav + compare)
     html += '<div class="card-actions">';
@@ -1269,7 +1269,7 @@ window.addEventListener('error', function(e) {
         item = (KB_DATA[catKey] || []).find(function(m) { return m.name === name; });
       }
       if (!item) return;
-      html += '<div class="item-card" style="--card-color:' + cfg.color + '">';
+      html += '<div class="item-card" style="--card-color:var(--accent)">';
       html += '<div class="card-actions"><button class="card-action fav active" data-id="' + id + '" title="取消收藏"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></button></div>';
       html += '<div class="card-header"><div class="card-name">' + (item.url ? '<a href="' + item.url + '" target="_blank" rel="noopener noreferrer">' + item.name + '</a>' : item.name) + '</div></div>';
       html += '<div class="card-desc">' + (item.desc || item.positioning || '') + '</div>';
