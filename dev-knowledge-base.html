@@ -2233,17 +2233,30 @@ mark.kb-hl {
   .content-section { content-visibility: visible; }
 }
 
-/* ═══ 模块导航 — 替代臃肿的 filter-chips ═══ */
-.module-nav {
+/* ═══ 统一粘性头部 — 品牌/搜索/操作 + 模块导航 集成一体 ═══
+   单条 sticky 头部包裹 .navbar 与 .module-nav，二者不再各自 sticky/玻璃，
+   消除"顶部消失、中部残留"的双条错乱与卡顿。 */
+.site-header {
   position: sticky;
-  top: 56px;
-  z-index: 90;
+  top: 0;
+  z-index: 110;
   background: var(--navbar-bg);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-bottom: 1px solid var(--glass-border);
-  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.25s ease;
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-bottom: 1px solid var(--rule);
 }
+.site-header .navbar,
+.site-header .module-nav {
+  position: static;
+  top: auto;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.site-header .navbar { border-bottom: none; }
+
+/* ═══ 模块导航 — 品牌操作条与模块 tab 的分隔线 ═══ */
+.module-nav { border-top: 1px solid var(--rule); }
 .module-nav.collapsed {
   transform: translateY(-100%);
   opacity: 0;
@@ -2376,7 +2389,8 @@ mark.kb-hl {
   </div>
 </header>
 
-<!-- NAVBAR — 精简：只保留搜索 + 主题切换 -->
+<!-- ===== 统一粘性头部：品牌 + 搜索 + 操作 + 模块导航 一体 ===== -->
+<header class="site-header" id="site-header">
 <nav class="navbar">
   <div class="container navbar-inner">
     <div class="navbar-brand" onclick="window.scrollTo({top:0,behavior:'smooth'})">KB</div>
@@ -2423,6 +2437,7 @@ mark.kb-hl {
     <button class="module-tab" data-module="dashboard">可视化 <span class="tab-count">9</span></button>
   </div>
 </nav>
+</header>
 
 <!-- Result count + sort bar -->
 <div class="container" style="padding-top:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
