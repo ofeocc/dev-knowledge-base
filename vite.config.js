@@ -24,7 +24,7 @@ export default defineConfig({
   },
   server: {
     port: 3000,
-    open: true,
+    open: false, // 不自动打开浏览器（避免每次启动弹窗）
     // 开发服务器也禁用源映射中间件
     sourcemapIgnoreList: () => true,
   },
