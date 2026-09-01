@@ -1,6 +1,7 @@
 node_modules/
 dist/
 assets/github-data.json
+assets/ai-data.json
 .env
 playwright-report/
 test-results/

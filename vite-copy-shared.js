@@ -56,13 +56,16 @@ export default function copySharedPlugin() {
         }
       }
 
-      // 4. 复制每日抓取的 GitHub 数据 -> dist/assets/github-data.json
-      //    loadGithubData() 运行时 fetch 该文件来更新星标/活跃度；不复制则线上 404，
-      //    永远回退到内置静态数据。
-      const ghData = path.resolve(__dirname, 'assets', 'github-data.json');
-      if (fs.existsSync(ghData)) {
-        fs.copyFileSync(ghData, path.resolve(__dirname, 'dist', 'assets', 'github-data.json'));
-        console.log('[copy-shared] 已复制 github-data.json -> dist/assets/');
+      // 4. 复制每日抓取的数据 -> dist/assets/
+      //    loadGithubData()/loadAIData() 运行时 fetch 这些文件来更新星标、AI 价格/上下文；
+      //    不复制则线上 404，永远回退到内置静态数据。
+      const jsonFiles = ['github-data.json', 'ai-data.json'];
+      for (const f of jsonFiles) {
+        const src = path.resolve(__dirname, 'assets', f);
+        if (fs.existsSync(src)) {
+          fs.copyFileSync(src, path.resolve(__dirname, 'dist', 'assets', f));
+          console.log(`[copy-shared] 已复制 ${f} -> dist/assets/`);
+        }
       }
     },
   };
