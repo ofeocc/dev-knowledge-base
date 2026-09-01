@@ -34,6 +34,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes to assets/github-data.json, skipping commit."
           else
-            git commit -m "chore: update GitHub data [skip ci]"
+            # 不用 [skip ci]：让本次数据提交触发 CI + 部署，线上站点才能拿到最新数据
+            git commit -m "chore: update GitHub data"
             git push
           fi

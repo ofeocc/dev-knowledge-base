@@ -868,6 +868,7 @@ window.addEventListener('error', function(e) {
     }
 
     renderModulePicks(mod);
+    buildQuickNav();
     syncURL();
   }
 
@@ -926,6 +927,8 @@ window.addEventListener('error', function(e) {
     var allSections = root.querySelectorAll('.content-section');
     var html = '';
     allSections.forEach(function(sec) {
+      // 只给当前模块（可见）的 section 生成导航点，避免点到其他模块的隐藏区块
+      if (sec.style.display === 'none') return;
       var title = sec.querySelector('h2');
       if (!title) return;
       var id = sec.id;
