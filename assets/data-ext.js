@@ -6,7 +6,7 @@
 // ===== AI 大模型评测（2026.7 最新）=====
 KB_DATA.aiModels = [
   {
-    name: 'GPT-5.6 Sol', vendor: 'OpenAI', tier: '超旗舰', type: '闭源',
+    name: 'GPT-5.6 Sol', vendor: 'OpenAI', tier: '超旗舰', type: '闭源', or: 'openai/gpt-5.6-luna-pro',
     releaseDate: '2026-07-09', params: '—', context: '1M Token',
     scores: { reasoning: 10, coding: 10, agent: 10, multimodal: 9, cost: 3, speed: 7, open: 0 },
     benchmarks: [
@@ -22,7 +22,7 @@ KB_DATA.aiModels = [
     updated: '2026-07-23'
   },
   {
-    name: 'Claude Fable 5', vendor: 'Anthropic', tier: '超旗舰', type: '闭源',
+    name: 'Claude Fable 5', vendor: 'Anthropic', tier: '超旗舰', type: '闭源', or: 'anthropic/claude-fable-5',
     releaseDate: '2026-07-20', params: '—', context: '2M Token',
     scores: { reasoning: 10, coding: 10, agent: 10, multimodal: 8, cost: 4, speed: 7, open: 0 },
     benchmarks: [
@@ -38,7 +38,7 @@ KB_DATA.aiModels = [
     updated: '2026-07-23'
   },
   {
-    name: 'Gemini 3.1 Pro', vendor: 'Google', tier: '主力旗舰', type: '闭源',
+    name: 'Gemini 3.1 Pro', vendor: 'Google', tier: '主力旗舰', type: '闭源', or: 'google/gemini-3-pro',
     releaseDate: '2026-02-19', params: '—', context: '2M Token',
     scores: { reasoning: 9, coding: 8, agent: 9, multimodal: 10, cost: 7, speed: 8, open: 0 },
     benchmarks: [
@@ -54,7 +54,7 @@ KB_DATA.aiModels = [
     updated: '2026-07-23'
   },
   {
-    name: 'Kimi K3', vendor: '月之暗面', tier: '国产超旗舰', type: '开源',
+    name: 'Kimi K3', vendor: '月之暗面', tier: '国产超旗舰', type: '开源', or: 'moonshotai/kimi-k3',
     releaseDate: '2026-07-16', params: '2.8T (MoE)', context: '100万 Token',
     scores: { reasoning: 9, coding: 10, agent: 9, multimodal: 7, cost: 8, speed: 7, open: 10 },
     benchmarks: [
@@ -70,7 +70,7 @@ KB_DATA.aiModels = [
     updated: '2026-07-23'
   },
   {
-    name: 'DeepSeek V4 Pro', vendor: '深度求索', tier: '国产超旗舰', type: '开源',
+    name: 'DeepSeek V4 Pro', vendor: '深度求索', tier: '国产超旗舰', type: '开源', or: 'deepseek/deepseek-v4-pro-0813',
     releaseDate: '2026-07-21', params: '1.6T (MoE, 激活49B)', context: '100万 Token',
     scores: { reasoning: 9, coding: 9, agent: 8, multimodal: 7, cost: 10, speed: 8, open: 10 },
     benchmarks: [
@@ -86,7 +86,7 @@ KB_DATA.aiModels = [
     updated: '2026-07-23'
   },
   {
-    name: 'Qwen3.8-Max', vendor: '阿里通义', tier: '国产主力旗舰', type: '即将开源',
+    name: 'Qwen3.8-Max', vendor: '阿里通义', tier: '国产主力旗舰', type: '即将开源', or: 'qwen/qwen3.8-27b',
     releaseDate: '2026-07-19', params: '2.4T', context: '128K Token',
     scores: { reasoning: 9, coding: 9, agent: 8, multimodal: 8, cost: 8, speed: 8, open: 9 },
     benchmarks: [
@@ -101,7 +101,7 @@ KB_DATA.aiModels = [
     updated: '2026-07-23'
   },
   {
-    name: 'GLM-5.2', vendor: '智谱 AI', tier: '国产主力旗舰', type: '开源',
+    name: 'GLM-5.2', vendor: '智谱 AI', tier: '国产主力旗舰', type: '开源', or: 'z-ai/glm-5.3',
     releaseDate: '2026-06-15', params: '745B (MoE, 激活40B)', context: '100万 Token',
     scores: { reasoning: 8, coding: 8, agent: 9, multimodal: 7, cost: 9, speed: 8, open: 10 },
     benchmarks: [

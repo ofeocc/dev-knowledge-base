@@ -16,9 +16,9 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="开发者知识库 · 前后端框架与 AI 工程全景">
 <meta name="twitter:description" content="433+ 框架工具 · 8 款 AI 大模型评测 · 77 个 AI 术语百科 · 10 张可视化图表">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%237c5cfc'/%3E%3Cpath d='M8 22V10l5 7 5-7v12' stroke='%23fff' stroke-width='2.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
-<link rel="manifest" href="./assets/manifest-DN0y9dlA.json">
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%237c5cfc'/%3E%3Cpath d='M48 132V60l30 42 30-42v72' stroke='%23fff' stroke-width='15' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%233d7eff'/%3E%3Ccircle cx='16' cy='10' r='3.4' fill='%23fff'/%3E%3Ccircle cx='9' cy='23' r='2.9' fill='%23fff'/%3E%3Ccircle cx='23' cy='23' r='2.9' fill='%23fff'/%3E%3Cpath d='M16 13.4 9 23M16 13.4 23 23M11.9 23h8.2' stroke='%23fff' stroke-width='1.9' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<link rel="manifest" href="./assets/manifest-D9p2q-CY.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%233d7eff'/%3E%3Ccircle cx='96' cy='60' r='21' fill='%23fff'/%3E%3Ccircle cx='54' cy='138' r='17' fill='%23fff'/%3E%3Ccircle cx='138' cy='138' r='17' fill='%23fff'/%3E%3Cpath d='M96 81 54 138M96 81 138 138M71 138h50' stroke='%23fff' stroke-width='11' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="知识库">
@@ -1936,16 +1936,21 @@ mark.kb-hl {
 /* Navbar brand — subtle glow on hover */
 .navbar-brand {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-family: 'Outfit', sans-serif;
   font-weight: 800;
-  font-size: 20px;
+  font-size: 18px;
   color: var(--accent);
   cursor: pointer;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
   user-select: none;
   flex-shrink: 0;
   transition: transform 0.3s var(--spring-bounce);
 }
+.navbar-brand .brand-icon { border-radius: 7px; box-shadow: 0 0 12px -2px var(--accent-glow); }
+.navbar-brand .brand-text { line-height: 1; }
 
 .navbar-brand::after {
   content: ''; position: absolute; inset: -4px -8px;
@@ -2539,7 +2544,10 @@ mark.kb-hl {
 <header class="site-header" id="site-header">
 <nav class="navbar">
   <div class="container navbar-inner">
-    <div class="navbar-brand" onclick="window.scrollTo({top:0,behavior:'smooth'})">KB</div>
+    <div class="navbar-brand" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="开发者知识库" aria-label="开发者知识库">
+      <svg class="brand-icon" viewBox="0 0 32 32" width="22" height="22" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--accent)"/><circle cx="16" cy="10" r="3.4" fill="#fff"/><circle cx="9" cy="23" r="2.9" fill="#fff"/><circle cx="23" cy="23" r="2.9" fill="#fff"/><path d="M16 13.4 9 23M16 13.4 23 23M11.9 23h8.2" stroke="#fff" stroke-width="1.9" stroke-linecap="round" fill="none"/></svg>
+      <span class="brand-text">知识库</span>
+    </div>
     <div class="search-box">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
       <input type="text" id="search" placeholder="搜索框架、工具、技巧…" autocomplete="off" aria-label="搜索知识库">

@@ -621,7 +621,7 @@ window.addEventListener('error', function(e) {
     if (KB_DATA.aiModels && KB_DATA.aiModels.length) {
       html += '<section class="content-section" id="sec-ai-models">';
       html += sectionHeader('AI 大模型评测（2026.7 最新）', KB_DATA.aiModels.length, '#fbbf24', '<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/>');
-      html += '<div style="margin-bottom:16px;padding:12px 16px;background:rgba(52,211,153,0.08);border-radius:10px;border:1px solid rgba(52,211,153,0.15);font-size:13px;color:var(--muted);"><span class="freshness-badge freshness-daily">每日更新</span> 基于最新公开榜单与刚发布版本，含权威来源链接。国产模型与海外差距已收敛至 3-4 个月，前端编程、性价比、开源规模已反超。</div>';
+      html += '<div style="margin-bottom:16px;padding:12px 16px;background:rgba(52,211,153,0.08);border-radius:10px;border:1px solid rgba(52,211,153,0.15);font-size:13px;color:var(--muted);"><span class="freshness-badge freshness-daily">模型/价格 每日同步</span> 实时价格与上下文来自 OpenRouter（每日抓取）；能力评分为人工校准。国产模型与海外差距已收敛，前端编程、性价比、开源规模已反超。</div>';
       html += '<div class="ai-model-grid">';
       KB_DATA.aiModels.forEach(function(m) { html += renderAIModelCard(m); });
       html += '</div></section>';
@@ -868,6 +868,7 @@ window.addEventListener('error', function(e) {
     }
 
     renderModulePicks(mod);
+    buildQuickNav();
     syncURL();
   }
 
@@ -926,6 +927,8 @@ window.addEventListener('error', function(e) {
     var allSections = root.querySelectorAll('.content-section');
     var html = '';
     allSections.forEach(function(sec) {
+      // 只给当前模块（可见）的 section 生成导航点，避免点到其他模块的隐藏区块
+      if (sec.style.display === 'none') return;
       var title = sec.querySelector('h2');
       if (!title) return;
       var id = sec.id;
@@ -2491,6 +2494,25 @@ window.addEventListener('error', function(e) {
   // (init3DTilt 已合并到 initUnifiedMouseHandler)
   // (initMagneticButtons 已合并到 initUnifiedMouseHandler)
 
+  // ===== 加载 OpenRouter 实时 AI 模型价格/上下文（每日抓取的 ai-data.json）=====
+  function loadAIData() {
+    fetch('./assets/ai-data.json')
+      .then(function(res){ if(!res.ok) throw new Error('HTTP '+res.status); return res.json(); })
+      .then(function(data){
+        if(!data) return;
+        var updated = 0;
+        (KB_DATA.aiModels || []).forEach(function(m){
+          var d = data[m.name];
+          if(!d) return;
+          if(d.context) m.context = d.context;
+          if(d.price && d.price.input) m.price = d.price;
+          updated++;
+        });
+        if(updated>0) console.log('[KB] AI 模型实时价格/上下文已更新 (' + updated + ')');
+      })
+      .catch(function(){ /* 无实时数据时保持内置 */ });
+  }
+
   // ===== 加载真实 GitHub 数据（异步，不阻塞首屏渲染）=====
   // 从 assets/github-data.json 加载脚本抓取的真实 GitHub 数据，
   // 合并到 KB_DATA 中（更新 stars、活跃度等），然后重新渲染卡片。
@@ -2645,6 +2667,8 @@ window.addEventListener('error', function(e) {
 
     // 异步加载真实 GitHub 数据（不阻塞首屏，加载完成后自动更新卡片）
     loadGithubData();
+    // 异步加载 OpenRouter 实时 AI 模型价格/上下文
+    try { loadAIData(); } catch(e) { console.warn('[init] aiData:', e); }
 
     // 初始化模块系统 — 按 URL 决定初始模块（支持 #m= / #cat= / #section）。
     // 同步执行（不再 setTimeout）：避免刚渲染出全部卡片、200ms 后才收起造成
