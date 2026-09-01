@@ -127,7 +127,7 @@ window.addEventListener('error', function(e) {
 
   var recommendConfig = {
     adopt:   { label: 'Adopt',   color: '#34d399', bg: 'rgba(52,211,153,0.12)',  desc: '强烈推荐' },
-    trial:   { label: 'Trial',   color: '#22d3ee', bg: 'rgba(34,211,238,0.12)',  desc: '值得试验' },
+    trial:   { label: 'Trial',   color: '#2fd0e2', bg: 'rgba(47,208,226,0.12)',  desc: '值得试验' },
     assess:  { label: 'Assess',  color: '#fbbf24', bg: 'rgba(251,191,36,0.12)',  desc: '探索评估' },
     caution: { label: 'Caution', color: '#f87171', bg: 'rgba(248,113,113,0.12)', desc: '谨慎使用' }
   };
