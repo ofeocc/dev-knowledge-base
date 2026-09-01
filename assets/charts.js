@@ -7,8 +7,8 @@
   function readVars() {
     var s = getComputedStyle(document.documentElement);
     return {
-      accent: s.getPropertyValue('--accent').trim() || '#7c5cfc',
-      accent2: s.getPropertyValue('--accent2').trim() || '#22d3ee',
+      accent: s.getPropertyValue('--accent').trim() || '#3d7eff',
+      accent2: s.getPropertyValue('--accent2').trim() || '#2fd0e2',
       ink: s.getPropertyValue('--ink').trim() || '#e8e8f5',
       muted: s.getPropertyValue('--muted').trim() || '#7a7a96',
       rule: s.getPropertyValue('--rule').trim() || 'rgba(255,255,255,0.07)',
