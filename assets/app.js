@@ -2103,6 +2103,7 @@ window.addEventListener('error', function(e) {
   var scrollTicking = false;
   // 检测浏览器是否支持 CSS Scroll-Driven Animations — 支持时由原生 CSS 接管，跳过 JS 更新
   var supportsScrollDriven = typeof CSS !== 'undefined' && CSS.supports && CSS.supports('animation-timeline', 'scroll()');
+  var _lastSpy = 0;
   function handleScroll() {
     if (scrollTicking) return;
     scrollTicking = true;
@@ -2113,31 +2114,31 @@ window.addEventListener('error', function(e) {
       var navbar = document.querySelector('.navbar');
       if (navbar) navbar.classList.toggle('scrolled', offset > 30);
       // 返回顶部 & 快捷导航
-      if (offset > 400) {
-        if (backToTop) backToTop.classList.add('visible');
-        if (quickNav) quickNav.classList.add('visible');
-      } else {
-        if (backToTop) backToTop.classList.remove('visible');
-        if (quickNav) quickNav.classList.remove('visible');
-      }
+      var showFloat = offset > 400;
+      if (backToTop) backToTop.classList.toggle('visible', showFloat);
+      if (quickNav) quickNav.classList.toggle('visible', showFloat);
       // 滚动进度条 — 支持 CSS Scroll-Driven Animations 时跳过 JS 更新（由合成线程接管）
       if (scrollProgressBar && !supportsScrollDriven) {
         var docHeight = document.documentElement.scrollHeight - window.innerHeight;
         var pct = docHeight > 0 ? (offset / docHeight) * 100 : 0;
         scrollProgressBar.style.width = pct + '%';
       }
-      // 高亮当前 section 对应的导航点（使用缓存引用）
-      var scrollPos = offset + 120;
-      var activeId = null;
-      for (var i = 0; i < _cachedSections.length; i++) {
-        var sec = _cachedSections[i];
-        if (sec.style.display !== 'none' && sec.offsetTop <= scrollPos) {
-          activeId = sec.id;
+      // 高亮当前 section —— 节流到 ~6 次/秒，避免每帧读 offsetTop 造成布局抖动(掉帧主因)
+      var now = Date.now();
+      if (now - _lastSpy > 150) {
+        _lastSpy = now;
+        var scrollPos = offset + 120;
+        var activeId = null;
+        for (var i = 0; i < _cachedSections.length; i++) {
+          var sec = _cachedSections[i];
+          if (sec.style.display !== 'none' && sec.offsetTop <= scrollPos) {
+            activeId = sec.id;
+          }
         }
-      }
-      var dots = quickNav ? quickNav.querySelectorAll('.quick-nav-dot') : [];
-      for (var j = 0; j < dots.length; j++) {
-        dots[j].classList.toggle('active', dots[j].getAttribute('data-target') === activeId);
+        var dots = quickNav ? quickNav.querySelectorAll('.quick-nav-dot') : [];
+        for (var j = 0; j < dots.length; j++) {
+          dots[j].classList.toggle('active', dots[j].getAttribute('data-target') === activeId);
+        }
       }
     });
   }
