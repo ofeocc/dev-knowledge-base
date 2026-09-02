@@ -5,3 +5,8 @@ assets/ai-data.json
 .env
 playwright-report/
 test-results/
+
+# junk
+_pw-radar.cjs
+Tencent/
+
