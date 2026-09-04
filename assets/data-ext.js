@@ -281,6 +281,36 @@ KB_DATA.devopsTutorials = [
       'E2E 测试保持精简，只覆盖关键路径'
     ],
     source: 'https://vitest.dev/guide/'
+  },
+  {
+    name: 'Node.js / npm', cat: '环境搭建', icon: 'node',
+    desc: 'Node.js 是运行 JS 的后端运行时；npm 是它的包管理器。从初始化项目到装依赖、写脚本、读环境变量全靠它，是 JS 开发的地基。',
+    tutorial: [
+      { step: '1. 初始化项目', cmd: 'npm init -y\n# 生成 package.json（可再手动改 name / scripts）', desc: '创建项目入口 package.json' },
+      { step: '2. 安装依赖', cmd: 'npm install express          # 运行时依赖\nnpm install -D typescript    # 开发依赖(-D)\nnpm install -g pnpm          # 全局(-g)', desc: '分清运行时依赖和开发依赖' },
+      { step: '3. 常用脚本', cmd: '"scripts": {\n  "dev": "node server.js",\n  "build": "tsc",\n  "start": "node dist/server.js"\n}\n# 运行：npm run dev', desc: '把常用命令写进 scripts，一行启动' },
+      { step: '4. 读取环境变量', cmd: 'npm install dotenv\n# .env\nPORT=3000\nDB_URL=postgres://user:pass@localhost:5432/db\n# server.js\nrequire("dotenv").config()\nconsole.log(process.env.PORT)', desc: '.env 放密钥，用 dotenv 读取；.env 必须加入 .gitignore' },
+      { step: '5. TypeScript 起步', cmd: 'npm i -D typescript @types/node\nnpx tsc --init      # 生成 tsconfig.json，开 strict\nnpx tsc             # 编译到 dist', desc: '开 strict 更安全，熟 TS 再上' }
+    ],
+    pros: ['前后端同一种语言', 'npm 生态巨大，什么都有', '与 Vite/React 等前端工具无缝'],
+    cons: ['回调/异步需要时间适应', 'node_modules 体积大（用 pnpm 更省）', '运行性能弱于 Go/Java'],
+    bestPractices: ['用 pnpm 替代 npm（更快更省盘）', '.env 必须 gitignore', '提交 package-lock.json 锁版本', '用 .nvmrc 固定 Node 版本'],
+    source: 'https://nodejs.org/en/learn'
+  },
+  {
+    name: '前端部署', cat: '部署上线', icon: 'deploy',
+    desc: '把 Vite 构建的前端项目放到静态托管（GitHub Pages / Vercel）上线，让全世界通过网址访问，还带 HTTPS。',
+    tutorial: [
+      { step: '1. 构建产物', cmd: 'npm run build\n# 生成 dist/（纯静态文件，前端上线必需）', desc: '前端必须 build 成静态文件才能托管' },
+      { step: '2. 本地预览', cmd: 'npm run preview\n# 打开 http://localhost:4173', desc: '上线前先本地验证构建产物' },
+      { step: '3. GitHub Pages', cmd: 'git subtree push --prefix dist origin gh-pages\n# 或仓库 Settings→Pages→Deploy from gh-pages', desc: '把 dist 发布到 gh-pages 分支即可上线' },
+      { step: '4. Vercel / Netlify', cmd: '# 在 vercel.com 导入 GitHub 仓库\n# 自动识别 Vite，构建命令 build、输出 dist\nvercel --prod   # CI 中也可用', desc: '零配置、自动 HTTPS、自动预览' },
+      { step: '5. CI 自动部署', cmd: '# .github/workflows/deploy.yml\n- run: npm ci\n- run: npm run build\n- uses: peaceiris/actions-gh-pages@v3\n  with: publish_dir: ./dist', desc: '每次 push 自动构建并发布上线' }
+    ],
+    pros: ['免费且自带 HTTPS', 'push 即上线，回滚方便', 'CDN 加速静态资源'],
+    cons: ['仅适合纯静态（无服务器逻辑）', 'SPA 路由需额外配置 404 重写', '构建产物会让 git 变大'],
+    bestPractices: ['dist/ 加入 .gitignore，用插件发布', 'SPA 用 History 路由记得配 fallback', '绑定自定义域名提升品牌'],
+    source: 'https://pages.github.com/'
   }
 ];
 

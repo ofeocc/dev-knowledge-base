@@ -174,6 +174,8 @@
   var titleSkewSetters = [];
 
   function initVelocityEngine() {
+    // 性能：标题速度倾斜需要在每个滚动帧更新 ~30 个 gsap.quickTo，代价高、收益低，已禁用。
+    return;
     if (reduceMotion || !lenis) return;
 
     // V11.1: 滚动时才启动 rAF 循环，空闲时完全停止

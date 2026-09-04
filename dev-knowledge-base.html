@@ -174,16 +174,10 @@ body::before {
     radial-gradient(ellipse 700px 600px at 88% 15%, rgba(47,208,226,0.06), transparent 55%),
     radial-gradient(ellipse 800px 600px at 50% 110%, rgba(61,126,255,0.05), transparent 55%),
     radial-gradient(ellipse 500px 400px at 80% 80%, rgba(47,208,226,0.03), transparent 55%);
-  animation: ambientShift 30s ease-in-out infinite alternate;
 }
 body::after {
   content:''; position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:0.015;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-@keyframes ambientShift {
-  0% { transform: scale(1) rotate(0deg); }
-  50% { transform: scale(1.06) rotate(1deg); }
-  100% { transform: scale(1.1) rotate(-0.8deg); }
 }
 
 h1,h2,h3,h4 { font-family:'Outfit','PingFang SC','Microsoft YaHei',sans-serif; font-weight:700; line-height:1.3; }
@@ -1009,10 +1003,11 @@ sup a:hover { text-decoration:underline; color:var(--accent2); }
 }
 .quick-nav-dot:hover::after { opacity:1; }
 
-/* ===== GSAP ENHANCED UX — will-change 优化 ===== */
+/* ===== GSAP ENHANCED UX — 性能优化 ===== */
+/* 卡片已不做持续性动画，避免为数百个元素强行创建 GPU 合成层导致掉帧 */
 .item-card, .tech-card, .showcase-card, .ai-model-card,
 .glossary-card, .solution-card, .path-card, .devops-card, .chart-card {
-  will-change: transform, opacity, filter;
+  will-change: auto;
 }
 
 /* Mask inner 文字遮罩揭示 */
@@ -2084,11 +2079,8 @@ mark.kb-hl {
 }
 
 .search-box:focus-within {
-  border-color: var(--accent);
-  box-shadow:
-    0 0 0 4px var(--accent-soft),
-    0 0 24px -4px var(--accent-glow),
-    inset 0 1px 0 rgba(255,255,255,0.04);
+  /* 聚焦光效统一放在 input 上（圆角药丸），不要在方形容器上再加框，
+     否则会出现"方形外框套圆形输入框"的错位。此处仅负责图标动效。 */
 }
 
 /* Search icon — rotate on focus */
